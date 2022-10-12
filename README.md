@@ -1,12 +1,13 @@
 ---
 title: Stable Diffusion
-emoji: 👁
-colorFrom: blue
-colorTo: indigo
+emoji: 🏃
+colorFrom: red
+colorTo: red
 sdk: gradio
-sdk_version: 3.4.1
+sdk_version: 3.1.7
 app_file: app.py
 pinned: false
+license: mit
 ---
 
 Check out the configuration reference at https://huggingface.co/docs/hub/spaces-config-reference
