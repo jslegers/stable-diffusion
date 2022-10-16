@@ -1,55 +1,42 @@
 import gradio as gr
 import torch
-#from torch import autocast
-from diffusers import StableDiffusionPipeline
-#from datasets import load_dataset
-from PIL import Image
-#from io import BytesIO
-#import base64
-#import re
 import os
-import requests
-import subprocess
+from diffusers import StableDiffusionPipeline
 
 def dummy(images, **kwargs):
     return images, False
 
-try:
-    subprocess.check_output('nvidia-smi')
-    print('Nvidia GPU detected!')
-    device = "cuda"
-except Exception: # this command not being found can raise quite a few different errors depending on the configuration
-    device = "cpu"
-    print('No Nvidia GPU in system!')
-
 AUTH_TOKEN = os.environ.get('AUTH_TOKEN')
 if not AUTH_TOKEN:
     share = True
-    torch_dtype = torch.float16
     with open('/root/.huggingface/token') as f:
         lines = f.readlines()
         AUTH_TOKEN = lines[0]
 else:
     share = False
-    torch_dtype = torch.float32
 
 model_id = "CompVis/stable-diffusion-v1-4"
 
-#If you are running this code locally, you need to either do a 'huggingface-cli login` or paste your User Access Token from here https://huggingface.co/settings/tokens into the use_auth_token field below.
-pipe = StableDiffusionPipeline.from_pretrained(model_id, use_auth_token=AUTH_TOKEN, revision="fp16", torch_dtype=torch_dtype).to(device)
+device = "cuda" if torch.cuda.is_available() else "cpu"
+if device == "cuda":
+    print('Nvidia GPU detected!')
+    pipe = StableDiffusionPipeline.from_pretrained(
+        model_id,
+        use_auth_token=AUTH_TOKEN,
+        revision="fp16",
+        torch_dtype=torch.float16
+    ).to(device)
+else:
+    print('No Nvidia GPU in system!')
+    pipe = StableDiffusionPipeline.from_pretrained(
+        model_id,
+        use_auth_token=AUTH_TOKEN
+    ).to(device)
+
 pipe.safety_checker = dummy
 #torch.backends.cudnn.benchmark = True
 
-#When running locally, you won`t have access to this, so you can remove this part
-#word_list_dataset = load_dataset("stabilityai/word-list", data_files="list.txt", use_auth_token=AUTH_TOKEN)
-#word_list = word_list_dataset["train"]['text']
-
 def infer(prompt="", samples=4, steps=20, scale=7.5, seed=1437181781):
-    #When running locally you can also remove this filter
-    #for filter in word_list:
-    #    if re.search(rf"\b{filter}\b", prompt):
-    #        raise gr.Error("Unsafe content found. Please try again with different prompts.")
-
     generator = torch.Generator(device=device).manual_seed(seed)
     images = []
     images_list = pipe(
@@ -58,11 +45,8 @@ def infer(prompt="", samples=4, steps=20, scale=7.5, seed=1437181781):
         guidance_scale=scale,
         generator=generator,
     )
-    #safe_image = Image.open(r"unsafe.png")
+
     for i, image in enumerate(images_list["sample"]):
-    #    if(images_list["nsfw_content_detected"][i]):
-    #        images.append(safe_image)
-    #    else:
         images.append(image)
 
     return images
