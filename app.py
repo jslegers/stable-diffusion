@@ -25,14 +25,15 @@ if device == "cuda":
         use_auth_token=AUTH_TOKEN,
         revision="fp16",
         torch_dtype=torch.float16
-    ).to(device)
+    )
 else:
     print('No Nvidia GPU in system!')
     pipe = StableDiffusionPipeline.from_pretrained(
         model_id,
         use_auth_token=AUTH_TOKEN
-    ).to(device)
+    )
 
+pipe.to(device)
 pipe.safety_checker = dummy
 #torch.backends.cudnn.benchmark = True
 
@@ -287,7 +288,9 @@ with block:
                 )
 
         gallery = gr.Gallery(
-            label="Generated images", show_label=False, elem_id="gallery"
+            label="Generated images",
+            show_label=False,
+            elem_id="gallery"
         ).style(grid=[2], height="auto")
 
         with gr.Group(elem_id="container-advanced-btns"):
@@ -340,4 +343,4 @@ Despite how impressive being able to turn text into image is, beware to the fact
            """
         )
 
-block.queue(concurrency_count=40, max_size=20).launch(share=share, max_threads=150)
+block.queue(max_size=10).launch(share=share, enable_queue=True)
