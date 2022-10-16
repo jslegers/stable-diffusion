@@ -6,16 +6,16 @@ from diffusers import StableDiffusionPipeline
 def dummy(images, **kwargs):
     return images, False
 
+model_id = "CompVis/stable-diffusion-v1-4"
+
 AUTH_TOKEN = os.environ.get('AUTH_TOKEN')
-if not AUTH_TOKEN:
+if AUTH_TOKEN:
+    share = False
+else:
     share = True
     with open('/root/.huggingface/token') as f:
         lines = f.readlines()
         AUTH_TOKEN = lines[0]
-else:
-    share = False
-
-model_id = "CompVis/stable-diffusion-v1-4"
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 if device == "cuda":
@@ -340,10 +340,4 @@ Despite how impressive being able to turn text into image is, beware to the fact
            """
         )
 
-block.queue(concurrency_count=40, max_size=20).launch(
-    inline=True,
-    share=share,
-    debug=True,
-    show_error=True,
-    max_threads=150
-)
+block.queue(concurrency_count=40, max_size=20).launch(share=share, max_threads=150)
