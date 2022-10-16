@@ -64,7 +64,7 @@ gr.Interface(
         show_label=False,
         elem_id="gallery"
     ).style(grid=[2], height="auto"),
-).launch().launch(
+).launch(
     share=share,
     enable_queue=True
 )
