@@ -24,15 +24,13 @@ except Exception: # this command not being found can raise quite a few different
 
 AUTH_TOKEN = os.environ.get('AUTH_TOKEN')
 if not AUTH_TOKEN:
-    isSpaces = False
-    isNotebook = True
+    share = True
     torch_dtype = torch.float16
     with open('/root/.huggingface/token') as f:
         lines = f.readlines()
         AUTH_TOKEN = lines[0]
 else:
-    isSpaces = True
-    isNotebook = False
+    share = False
     torch_dtype = torch.float32
 
 model_id = "CompVis/stable-diffusion-v1-4"
@@ -360,7 +358,7 @@ Despite how impressive being able to turn text into image is, beware to the fact
 
 block.queue(concurrency_count=40, max_size=20).launch(
     inline=True,
-    share=not isSpaces,
+    share=share,
     debug=True,
     show_error=True,
     max_threads=150
