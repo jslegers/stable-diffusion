@@ -46,10 +46,10 @@ def infer(prompt="", samples=4, steps=20, scale=7.5, seed=1437181781):
         generator=generator,
     )
 
-    for i, image in enumerate(images_list["sample"]):
-        images.append(image)
+    #for i, image in enumerate(images_list["sample"]):
+    #    images.append(image)
 
-    return images
+    return images_list
 
 
 css = """
