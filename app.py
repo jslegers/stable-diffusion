@@ -21,8 +21,8 @@ if device == "cuda":
     pipe = StableDiffusionPipeline.from_pretrained(
         model_id,
         use_auth_token=AUTH_TOKEN,
-        # revision="fp16",
-        # torch_dtype=torch.float16
+        revision="fp16",
+        torch_dtype=torch.float16
     )
 else:
     print('No Nvidia GPU in system!')
@@ -46,10 +46,10 @@ def infer(prompt="", samples=4, steps=20, scale=7.5, seed=1437181781):
         generator=generator,
     )
 
-    #for i, image in enumerate(images_list["sample"]):
-    #    images.append(image)
+    for i, image in enumerate(images_list["sample"]):
+        images.append(image)
 
-    return images_list
+    return images
 
 
 css = """
