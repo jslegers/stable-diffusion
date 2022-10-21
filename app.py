@@ -38,18 +38,12 @@ pipe.safety_checker = dummy
 
 def infer(prompt="", samples=4, steps=20, scale=7.5, seed=1437181781):
     generator = torch.Generator(device=device).manual_seed(seed)
-    images = []
-    images_list = pipe(
+    return pipe(
         [prompt] * samples,
         num_inference_steps=steps,
         guidance_scale=scale,
         generator=generator,
-    )
-
-    for i, image in enumerate(images_list["sample"]):
-        images.append(image)
-
-    return images
+    ).images
 
 
 css = """
