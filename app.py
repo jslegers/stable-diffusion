@@ -21,8 +21,8 @@ if device == "cuda":
     pipe = StableDiffusionPipeline.from_pretrained(
         model_id,
         use_auth_token=AUTH_TOKEN,
-        revision="fp16",
-        torch_dtype=torch.float16
+        # revision="fp16",
+        # torch_dtype=torch.float16
     )
 else:
     print('No Nvidia GPU in system!')
